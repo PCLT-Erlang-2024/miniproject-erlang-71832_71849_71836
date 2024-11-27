@@ -75,7 +75,7 @@ loop_truck(Id, Capacity) ->
            
                 true ->
                     Belt ! {done, ok},
-                    io:format("Truck ~p with capacity of ~p: Loaded package ~p with size ~p~n", [Id, Capacity, PackId, Size]),
+                    io:format("Truck ~p with capacity of ~p: loaded package ~p with size ~p~n", [Id, Capacity, PackId, Size]),
                     loop_truck(Id, NewCapacity)
                 end
     end.

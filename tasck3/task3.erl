@@ -24,7 +24,7 @@ loop_factory(Belts, Id) ->
     %% Sending packages to the belt randomly
     Belt = lists:nth(rand:uniform(length(Belts)), Belts),
     Belt ! {pass, Package},
-    io:format("Factory: Package ~p added in the belt~n", [Id+1]),
+    io:format("Factory: package ~p added in the belt~n", [Id+1]),
     timer:sleep(50),
     loop_factory(Belts, Id+1).
 
@@ -37,13 +37,13 @@ loop_belt(Id, Trucks, Ctrl) ->
         ok ->
             receive
                 {pass, {package, PackId, Size}} ->
-                    io:format("Belt ~p: Package ~p added~n", [Id, PackId]),
+                    io:format("Belt ~p: package ~p added~n", [Id, PackId]),
                     NewPackage = {package, PackId, Size}
             end;
 
         {false, PackId, Size}  ->
             NewPackage = {package, PackId, Size},
-            io:format("Belt ~p: Redistributing package ~p ~n",[Id, PackId])
+            io:format("Belt ~p: redistributing package ~p ~n",[Id, PackId])
 
     end,
 
@@ -80,7 +80,7 @@ loop_truck(Id, Capacity) ->
            
                 true ->
                     Belt ! {done, ok},
-                    io:format("Truck ~p with space of ~p: Loaded package ~p with size ~p~n", [Id, 10-Capacity, PackId, Size]),
+                    io:format("Truck ~p with space of ~p: loaded package ~p with size ~p~n", [Id, 10-Capacity, PackId, Size]),
                     loop_truck(Id, NewCapacity)
                 end
     end.
