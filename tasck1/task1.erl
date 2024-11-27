@@ -66,6 +66,7 @@ loop_truck(Id, Capacity) ->
                 true ->
                     Belt ! {done, ok},
                     io:format("Truck ~p: Loaded package ~p~n", [Id, PackId]),
+                    timer:sleep(100),
                     loop_truck(Id, Capacity+1)
                 end
     end.
