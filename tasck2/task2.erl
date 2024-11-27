@@ -1,4 +1,4 @@
--module(task1).
+-module(task2).
 -export([start/0, loop_belt/3, loop_factory/2, loop_truck/2, factory/0]).
 
 start() ->
