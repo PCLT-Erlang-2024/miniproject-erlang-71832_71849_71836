@@ -5,7 +5,7 @@ start() ->
     spawn(task1, factory, []).
 
 factory() ->
-    %% Creat 3 belts and 4 trucks with the capasity of six packeges
+    %% Creat 3 belts and 4 trucks
     Trucks = [spawn(task1, loop_truck, [Id,0]) || Id <- lists:seq(1, 4)],
     Belts = [spawn(task1, loop_belt, [Id,Trucks,ok]) || Id <- lists:seq(1, 3)],
     
@@ -13,28 +13,30 @@ factory() ->
 
 loop_factory(Belts, Id) ->
 
-    Package = {packege, Id+1},
+    Package = {package, Id+1},
 
-    %% Sending packets to the conveyor belt randomly
+    %% Sending packages to the belt randomly
     Belt = lists:nth(rand:uniform(length(Belts)), Belts),
     Belt ! Package,
-    
-    timer:sleep(100),
+    io:format("Factory: Package ~p added in the belt~n", [Id+1]),
+    timer:sleep(1000),
     loop_factory(Belts, Id+1).
 
 
 loop_belt(Id, Trucks, Ctrl) ->
     Truck = lists:nth(rand:uniform(length(Trucks)), Trucks),
+
     case Ctrl of
         ok ->
             receive
-                {packege, PackId} ->
-                    io:format("Conveyor Belt ~p: Package ~p added~n", [Id, PackId]),
-                    NewPackage = {packege, PackId}
+                {package, PackId} ->
+                    io:format("Belt ~p: Package ~p added~n", [Id, PackId]),
+                    NewPackage = {package, PackId}
             end;
 
-        {{packege, PackId}, false}  ->
-            NewPackage = {packege, PackId}
+        {package, PackId}  ->
+            NewPackage = {package, PackId},
+            io:format("Belt ~p: Redistributing package ~p ~n ",[Id, PackId])
 
     end,
 
@@ -47,10 +49,11 @@ loop_belt(Id, Trucks, Ctrl) ->
 
 loop_truck(Id, Capacity) ->
     receive
-        {{packege, PackId}, Belt} ->
+        {{package, PackId}, Belt} ->
+
             if 
-                Capacity =< 10 ->   %% MAX CAPACITY SIX
-                    Belt ! {{packege, PackId}, false},
+                Capacity > 10 ->   %% MAX CAPACITY TEN
+                    Belt ! {package, PackId},
                     io:format("Truck ~p is full, dispatching with 10 packages~n", [Id]),
                     loop_truck(Id, 0);
            
